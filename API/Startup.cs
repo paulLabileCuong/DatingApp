@@ -13,6 +13,14 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Microsoft.EntityFrameworkCore;
+using API.Interfaces;
+using API.Services;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.Text;
+using API.Extensions;
+
 namespace API
 {
     public class Startup
@@ -28,11 +36,7 @@ namespace API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<DataContext>(options =>
-            {
-                options.UseSqlite(_config.GetConnectionString("DefaultConnection"));
-            });
-
+            services.AddApplicationServices(_config); // chapter 4 lesson 15 : Tai sao lai phải thêm extension
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
@@ -40,6 +44,9 @@ namespace API
             });
 
             services.AddCors();
+            // chapter 4 lesson 14 : AddAuthentication sau thay doi sang lesson 15
+            // chapter 4 lesson 15 : AddIdentityServices
+            services.AddIdentityServices(_config);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -56,6 +63,9 @@ namespace API
 
             app.UseCors(x =>
                 x.AllowAnyHeader().AllowAnyMethod().WithOrigins("https://localhost:4200"));
+            
+            // chapter 4 lesson 14
+            app.UseAuthentication();
 
             app.UseRouting();
 
