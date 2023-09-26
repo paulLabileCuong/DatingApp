@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Http;
 using API.Interfaces;
 using API.Entities;
 using System.Security.Claims;
+using API.Helpers;
 
 namespace API.Controllers
 {
@@ -30,11 +31,13 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers()
-        {
-            // Đưa người dùng từ cơ sở dữ liệu vào 1 danh sách
-            // để sử dụng 2 danh sách, cần đưa vào 1 khung, lớp hoặc 1 không gian tên khác và gọi Tolisst()
-            var users = await _userRepository.GetMembersAsync();
+        public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers([FromQuery]UserParams userParams)
+        {   
+            var users = await _userRepository.GetMembersAsync(userParams);
+
+            // Thêm thông tin phân trang vào tiêu đề phản hồi
+            Response.AddPaginationHeader(users.CurrentPage, users.PageSize, users.TotalCount, users.TotalPages);
+
             return Ok(users);
         }
 
