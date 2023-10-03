@@ -33,12 +33,31 @@ namespace API.Data
         public async Task<PagedList<MemberDto>> GetMembersAsync(UserParams userParams)
         {
             // the query is not executed until this point
-            var query = _context.Users
-                .ProjectTo<MemberDto>(_mapper.ConfigurationProvider) // ProjectTo() is used to project the query to a DTO
-                .AsNoTracking(); // AsNoTracking() is used to improve performance for read-only scenarios
+            var query = _context.Users.AsQueryable();
+
+            // filter out the current user
+            query = query.Where(u => u.UserName != userParams.CurrentUsername);
+            query = query.Where(u => u.Gender == userParams.Gender);
+            
+            // calculate the age range of the users to be returned (the minimum age and the maximum age)    
+            var minDob = DateTime.Today.AddYears(-userParams.MaxAge -1); 
+            var maxDob = DateTime.Today.AddYears(-userParams.MinAge); 
+            
+            // filter out the users who are not in the age range
+            query = query.Where(u => u.DateOfBirth >= minDob && u.DateOfBirth <= maxDob);
+
+            query = userParams.OrderBy switch
+            {
+                // if the order by is created, order by created
+                "created" => query.OrderByDescending(u => u.Created),
+                // otherwise, order by last active
+                _ => query.OrderByDescending(u => u.LastActive)
+            };
                 
             // the query is executed here (the query is not executed until this point
-            return await PagedList<MemberDto>.CreateAsync(query,userParams.PageNumber,userParams.PageSize); 
+            return await PagedList<MemberDto>.CreateAsync(query.ProjectTo<MemberDto>(_mapper
+                .ConfigurationProvider).AsNoTracking(),
+                    userParams.PageNumber,userParams.PageSize); 
         }
 
         public async Task<AppUser> GetUserByIdAsync(int id)

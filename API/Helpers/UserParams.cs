@@ -16,5 +16,14 @@ namespace API.Helpers
             // if the value is greater than the max page size, set the page size to the max page size, otherwise set it to the value
             set => _pageSize = (value > MaxPageSize) ? MaxPageSize : value; 
         }
+
+        public string CurrentUsername { get; set; }
+        public string Gender { get; set; }
+
+        // the minimum age
+        public int MinAge { get; set; } = 18;
+        // the maximum age
+        public int MaxAge { get; set; } = 150;
+        public string OrderBy { get; set; } = "lastActive"; // the default order by is last active
     }
 }

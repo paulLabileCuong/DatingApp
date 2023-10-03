@@ -31,14 +31,23 @@ namespace API.Controllers
         }
 
         [HttpGet]
+        // Sử dụng UserParams để phân trang và lọc người dùng theo giới tính
+        // Sử dụng FromQuery để lấy các tham số từ chuỗi truy vấn 
         public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers([FromQuery]UserParams userParams)
         {   
+            // Lấy người dùng theo tên
+            var user = await _userRepository.GetUserByUsernameAsync(User.GetUsername());
+            // Lấy tên người dùng hiện tại
+            userParams.CurrentUsername = user.UserName;
+            // Nếu giới tính là nam thì lọc ra những người dùng là nữ
+            if(string.IsNullOrEmpty(userParams.Gender)) 
+                userParams.Gender = user.Gender == "male" ? "female" : "male";
+            // Lấy danh sách người dùng
             var users = await _userRepository.GetMembersAsync(userParams);
-
             // Thêm thông tin phân trang vào tiêu đề phản hồi
             Response.AddPaginationHeader(users.CurrentPage, users.PageSize, users.TotalCount, users.TotalPages);
 
-            return Ok(users);
+            return Ok(users); // trả về phản hồi HTTP 200 OK
         }
 
         [HttpGet("{username}", Name = "GetUser")]
