@@ -20,11 +20,8 @@ namespace API.Entities
         public string Country { get; set; }
 
         // Một người dùng có thể có nhiều ảnh
-        public ICollection<Photo> Photos { get; set; }
-
-        // public int GetAge()
-        // {
-        //     return DateOfBirth.CalculateAge();
-        // }
+        public ICollection<Photo> Photos { get; set; } // danh sách ảnh của người dùng này 
+        public ICollection<UserLike> LikedByUsers { get; set; } // danh sách người dùng đã like mình
+        public ICollection<UserLike> LikedUsers { get; set; } // danh sách người dùng mình đã like
     }
 }

@@ -98,6 +98,17 @@ export class MembersService {
     return this.http.delete(this.baseUrl + 'users/delete-photo/' + photoId);
   }
 
+  // this method is called from member-card.component.ts
+  addLike(username: string) {
+    return this.http.post(this.baseUrl + 'likes/' + username, {});
+  }
+
+  getLikes(predicate: string, pageNumber , pageSize){
+    let params = this.getPaginationHeaders(pageNumber,pageSize); // this is a new instance of HttpParams
+    params = params.append('predicate', predicate); // predicate is either 'liked' or 'likedBy'
+    return this.getPaginatedResult<Partial<Member[]>>(this.baseUrl + 'likes', params); // predicate is either 'liked' or 'likedBy'
+  }
+
   private getPaginatedResult<T>(url, params) { 
     const paginatedResult: PaginatedResult<T> = new PaginatedResult<T>(); // this is a new instance of PaginatedResult
     return this.http.get<T>(url, { observe: 'response', params }).pipe(

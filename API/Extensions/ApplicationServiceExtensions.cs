@@ -27,6 +27,7 @@ namespace API.Extensions
             services.Configure<CloudinarySettings>(config.GetSection("CloudinarySettings")); // this is the section in appsettings.json
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IPhotoService, PhotoService>();
+            services.AddScoped<ILikesRepository, LikesRepository>(); // this is the interface, this is the implementation
             services.AddScoped<LogUserActivity>(); // this is the class that we created in the Helpers folder to update the last active date
             services.AddScoped<IUserRepository, UserRepository>(); // this is the interface, this is the implementation
             services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
