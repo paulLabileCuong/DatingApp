@@ -15,6 +15,7 @@ namespace API.Data
 
         public DbSet<AppUser> Users { get; set; } // tên bảng trong database sẽ là Users
         public DbSet<UserLike> Likes { get; set; } // tên bảng trong database sẽ là Likes
+        public DbSet<Message> Messages { get; set; } // tên bảng trong database sẽ là Messages
 
         // Để tạo quan hệ many-to-many giữa 2 bảng Users và Likes, ta cần override phương thức OnModelCreating
         // trong class DataContext này
@@ -40,6 +41,15 @@ namespace API.Data
                 .HasForeignKey(s => s.LikedUserId) // khóa ngoại của bảng Likes là LikedUserId
                 .OnDelete(DeleteBehavior.Cascade); // nếu người dùng bị xóa thì các like của người dùng đó cũng bị xóa
             
+            builder.Entity<Message>()
+                .HasOne(u => u.Sender) // một người dùng có thể gửi nhiều tin nhắn
+                .WithMany(m => m.MessagesSent) // một tin nhắn chỉ thuộc về một người dùng
+                .OnDelete(DeleteBehavior.Restrict); // nếu người dùng bị xóa thì tin nhắn của người dùng đó vẫn được giữ lại
+
+            builder.Entity<Message>()
+                .HasOne(u => u.Recipient) // một người dùng có thể nhận nhiều tin nhắn
+                .WithMany(m => m.MessagesReceived) // một tin nhắn chỉ thuộc về một người dùng
+                .OnDelete(DeleteBehavior.Restrict); // nếu người dùng bị xóa thì tin nhắn của người dùng đó vẫn được giữ lại
         }
 
     }

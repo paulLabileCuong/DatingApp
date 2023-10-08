@@ -23,5 +23,7 @@ namespace API.Entities
         public ICollection<Photo> Photos { get; set; } // danh sách ảnh của người dùng này 
         public ICollection<UserLike> LikedByUsers { get; set; } // danh sách người dùng đã like mình
         public ICollection<UserLike> LikedUsers { get; set; } // danh sách người dùng mình đã like
+        public ICollection<Message> MessagesSent { get; set; } // danh sách tin nhắn mình đã gửi
+        public ICollection<Message> MessagesReceived { get; set; } // danh sách tin nhắn mình đã nhận
     }
 }
