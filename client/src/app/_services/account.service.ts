@@ -40,6 +40,13 @@ export class AccountService {
   }
 
   setCurrentUser(user: User){
+
+    user.roles = [];
+    const roles = this.getDecodedToken(user.token).role; // getDecodedToken() is a custom method that decodes the token.
+    
+    //neu roles la 1 mang thi gan roles cho user.roles, neu khong thi push roles vao user.roles
+    Array.isArray(roles) ? user.roles = roles : user.roles.push(roles); 
+
     localStorage.setItem('user', JSON.stringify(user)); // JSON.stringify() converts a JavaScript object or value to a JSON string
     this.currentUserSource.next(user);
   }
@@ -50,4 +57,8 @@ export class AccountService {
     this.currentUserSource.next(null!); // Here, instead of passing 'null', you can pass an empty User object or undefined.
   }
   
+  // lấy token từ localStorage và decode nó để lấy ra các thông tin của user đó 
+  getDecodedToken(token: string) {
+    return JSON.parse(atob(token.split('.')[1]));
+  }
 }

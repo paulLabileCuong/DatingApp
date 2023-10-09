@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using API.Entities;
 using API.Interfaces;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
@@ -15,11 +16,13 @@ namespace API.Services
     public class TokenService : ITokenService
     {
         private readonly SymmetricSecurityKey _key;
-        public TokenService(IConfiguration config)
+        private readonly UserManager<AppUser> _userManager;
+        public TokenService(IConfiguration config , UserManager<AppUser> userManager)
         {
+            _userManager = userManager;
             _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["TokenKey"]));
         }
-        public string CreateToken(AppUser user)
+        public async Task<string> CreateToken(AppUser user)
         {
             // create claims for the token and add them to the list of claims 
 
@@ -27,6 +30,13 @@ namespace API.Services
                 new Claim(JwtRegisteredClaimNames.NameId, user.Id.ToString()), // this is the user id 
                 new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName) // this is the username
             };
+
+            // get the roles of the user
+            var roles = await _userManager.GetRolesAsync(user); 
+
+            // add the roles to the claims
+            claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role))); 
+
             // generate signing credentials 
 
             var creds = new SigningCredentials(_key, SecurityAlgorithms.HmacSha512Signature);

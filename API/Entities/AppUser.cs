@@ -1,13 +1,11 @@
 using System;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Identity;
 
 namespace API.Entities
 {
-    public class AppUser {
-        public int Id { get; set; }
-        public string UserName { get; set; }
-        public byte[] PasswordHash { get; set; }
-        public byte[] PasswordSalt { get; set; }
+    public class AppUser : IdentityUser<int> // thêm int để thay thế cho string
+    {
         public DateTime DateOfBirth { get; set; }
         public string KnownAs { get; set; }
         public DateTime Created { get; set; } = DateTime.Now;
@@ -25,5 +23,6 @@ namespace API.Entities
         public ICollection<UserLike> LikedUsers { get; set; } // danh sách người dùng mình đã like
         public ICollection<Message> MessagesSent { get; set; } // danh sách tin nhắn mình đã gửi
         public ICollection<Message> MessagesReceived { get; set; } // danh sách tin nhắn mình đã nhận
+        public ICollection<AppUserRole> UserRoles { get; set; } // danh sách các user role
     }
 }

@@ -50,6 +50,7 @@ namespace API.Controllers
             return Ok(users); // trả về phản hồi HTTP 200 OK
         }
 
+
         [HttpGet("{username}", Name = "GetUser")]
         public async Task<ActionResult<MemberDto>> GetUser(string username)
         {
